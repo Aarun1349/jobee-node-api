@@ -5,9 +5,15 @@ const app = express();
 //Importing all routes
 const jobs = require('./routes/jobs')
 
+
+
 //setting up config.env valiable
 dotenv.config({path:'./config/config.env'})
 const port = process.env.PORT || 8000;
+
+//Import Database connection
+const connectToDatabase = require('./config/database')
+connectToDatabase();
 
 
 //routes
