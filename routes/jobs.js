@@ -1,15 +1,17 @@
-const express = require('express')
+const express = require("express");
 const router = express.Router();
 //Importing Jobs controller methods
 
-const {getJobs} = require('../controllers/jobsController')
+const { getJobs, newJob } = require("../controllers/jobsController");
 
 // router.get ('/jobs',(req,res)=>{
-    
+
 // })
 
-
 // another way to create routes to call controller methods
-router.route('/jobs').get(getJobs)
+router.route("/jobs").get(getJobs);
+
+// route to create new job
+router.route("/job/new").post(newJob);
 
 module.exports = router;

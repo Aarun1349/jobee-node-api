@@ -80,7 +80,7 @@ const jobSchema = new mongoose.Schema({
     },
   },
   salary: {
-    type: Number,
+    type: String,
     required: [true, "Please provide expected salary for this job"],
   },
   postingDate: {
@@ -91,11 +91,10 @@ const jobSchema = new mongoose.Schema({
     type: Date,
     default: new Date().setDate(new Date().getDate() + 30),
   },
-  applicantsApplied:{
-    type:[Object],
-    select:false
-  }
+  applicantsApplied: {
+    type: [Object],
+    select: false,
+  },
 });
 
-
-module.exports = mongoose.model('Jobs',jobSchema);
+module.exports = mongoose.model("Jobs", jobSchema);

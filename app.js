@@ -15,6 +15,8 @@ const port = process.env.PORT || 8000;
 const connectToDatabase = require('./config/database')
 connectToDatabase();
 
+// Setup body parser
+app.use(express.json());
 
 //routes
 app.get('/',(req,res)=>{
