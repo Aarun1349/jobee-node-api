@@ -13,6 +13,29 @@ exports.getJobs = async (req, res, next) => {
   });
 };
 
+// Get a single job by id and slug => /api/v1/job/:id/:slug
+
+exports.getJobByIDandSlug = async (req, res, next) => {
+
+  
+  const job = await Job.find({
+    $and: [{ _id: req.params.id}, {slug: req.params.slug }],
+  });
+  
+  if (!job) {
+    res.status(404).json({
+      success: false,
+      message: "Job not found",
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      result: job.length,
+      data: job,
+    });
+  }
+};
+
 // Create a new jobs => /api/v1/job/new
 
 exports.newJob = async (req, res, next) => {
@@ -27,45 +50,40 @@ exports.newJob = async (req, res, next) => {
 // update a job => /api/v1/job/:id
 exports.updateJob = async (req, res, next) => {
   let job = await Job.findById(req.params.id);
-  
-  console.log('The JOB', job)  
-  console.log('The JOB', req.params.id)  
   if (!job) {
     res.status(404).json({
       success: false,
       message: "Job not found",
     });
   }
-  job = await Job.findByIdAndUpdate(req.params.id,req.body,{
-    new:true,
-    runValidators:true
-  })
+  job = await Job.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   res.status(200).json({
     success: true,
-    message:'Job Updated',
+    message: "Job Updated",
     data: job,
   });
-
 };
 
-// delete job => /api/v1/job/delete/:id
-exports.deleteJobs = async (req,res,next)=>{
-    const job = await Job.findById(req.params.id);
-    console.log('The JOB', job)  
-  console.log('The JOB', req.params.id)  
-    if(!job){
-        res.status(404).json({
-            success: false,
-            message: "Job not found",
-          });
-    }
-    const deleteJob = await Job.findByIdAndDelete(req.params.id);
-    res.status(200).json({
-        success: true,
-        message:'Job Deleted',
-        data: deleteJob,
-      });
-}
+// delete job => /api/v1/job/:id
+exports.deleteJobs = async (req, res, next) => {
+  const job = await Job.findById(req.params.id);
+
+  if (!job) {
+    res.status(404).json({
+      success: false,
+      message: "Job not found",
+    });
+  }
+  const deleteJob = await Job.findByIdAndDelete(req.params.id);
+  res.status(200).json({
+    success: true,
+    message: "Job Deleted",
+    data: deleteJob,
+  });
+};
 
 //get jobs by location => api/v1/jobs/:zipcode/:distance
 
