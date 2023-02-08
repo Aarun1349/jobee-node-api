@@ -16,12 +16,10 @@ exports.getJobs = async (req, res, next) => {
 // Get a single job by id and slug => /api/v1/job/:id/:slug
 
 exports.getJobByIDandSlug = async (req, res, next) => {
-
-  
   const job = await Job.find({
-    $and: [{ _id: req.params.id}, {slug: req.params.slug }],
+    $and: [{ _id: req.params.id }, { slug: req.params.slug }],
   });
-  
+
   if (!job) {
     res.status(404).json({
       success: false,
@@ -110,4 +108,34 @@ exports.getJobsInRadius = async (req, res, next) => {
   });
 };
 
-//
+// get Stats about a topic(job) aggregation => /api/v1/stats/:topic
+
+exports.jobStats = async (req, res, next) => {
+  const stats = await Job.aggregate([
+    {
+      $match: {
+        $text: { $search: '"' + req.params.topic + '"' },
+      },
+    },
+    {
+      $group: {
+        _id: {$toUpper:'$experience'},
+        totalJobs: { $sum: 1 },
+        avgPositions: { $avg: "$positions" },
+        avgSalary: { $avg: "$salary" },
+        minSalary: { $min: "$salary" },
+        maxSalary: { $max: "$salary" },
+      },
+    },
+  ]);
+  if (stats.length === 0) {
+    return res.status(200).json({
+      success: false,
+      messaage: `No Stats were found - ${req.params.topic}`,
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    data: stats,
+  });
+};
