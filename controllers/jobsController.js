@@ -3,14 +3,22 @@ const Job = require("../models/jobs");
 const geoCoder = require("../utils/geocoder");
 const ErrorHandler = require("../utils/errorHandle");
 const catchAssyncErrors = require("../middleware/catchAsyncErrors");
+const ApiFilters = require("../utils/apiFilters");
 
 // Get all jobs => /api/v1/jobs
 
 exports.getJobs = catchAssyncErrors(async (req, res, next) => {
-  const jobs = await Job.find();
+  const apiFilters = new ApiFilters(Job.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .searchByQuery()
+      .pagintion();
+  // const jobs = await Job.find();
+  const jobs = await apiFilters.query;
   res.status(200).json({
     success: true,
-    reults: jobs.length,
+    results: jobs.length,
     data: jobs,
   });
 });
@@ -126,7 +134,9 @@ exports.jobStats = catchAssyncErrors(async (req, res, next) => {
     },
   ]);
   if (stats.length === 0) {
-    return next(new ErrorHandler(`No Stats were found - ${req.params.topic}`, 200));
+    return next(
+      new ErrorHandler(`No Stats were found - ${req.params.topic}`, 200)
+    );
     // return res.status(200).json({
     //   success: false,
     //   messaage: `No Stats were found - ${req.params.topic}`,
