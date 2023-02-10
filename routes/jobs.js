@@ -2,7 +2,15 @@ const express = require("express");
 const router = express.Router();
 //Importing Jobs controller methods
 
-const { getJobs, newJob , getJobsInRadius, updateJob, deleteJobs } = require("../controllers/jobsController");
+const {
+  getJobs,
+  newJob,
+  getJobsInRadius,
+  updateJob,
+  deleteJobs,
+  getJobByIDandSlug,
+  jobStats,
+} = require("../controllers/jobsController");
 
 // router.get ('/jobs',(req,res)=>{
 
@@ -17,10 +25,17 @@ router.route("/job/new").post(newJob);
 // route to get jobs with the radius
 router.route("/jobs/:zipcode/:distance").get(getJobsInRadius);
 
+//route to get single job by id and slug
+router.route("/job/:id/:slug").get(getJobByIDandSlug);
+
 //route to update job
-router.route("/job/:id").put(updateJob);
+router.route("/job/:id").put(updateJob).delete(deleteJobs);
 
 //route to delete job
-router.route("/job/delete/:id").delete(deleteJobs);
+// router.route("/job/delete/:id").delete(deleteJobs);
+
+//route to get job stats  => /api/v1/stats/:topic
+router.route("/stats/:topic").get(jobStats);
+
 
 module.exports = router;
