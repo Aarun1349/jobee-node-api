@@ -1,9 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cokkieParser = require('cookie-parser')
 const app = express();
 
 //Importing all routes
 const jobs = require("./routes/jobs");
+const auth = require("./routes/auth")
 
 //setting up config.env valiable
 dotenv.config({ path: "./config/config.env" });
@@ -13,6 +15,7 @@ const port = process.env.PORT || 8000;
 const connectToDatabase = require("./config/database");
 const errorMiddleware = require("./middleware/errors");
 const ErrorHandler = require("./utils/errorHandle");
+const cookieParser = require("cookie-parser");
 
 //handling uncaught exceptions
 process.on("uncaughtException", (err) => {
@@ -24,6 +27,8 @@ connectToDatabase();
 
 // Setup body parser
 app.use(express.json());
+app.use(cokkieParser());
+
 
 //routes
 app.get("/", (req, res) => {
@@ -31,6 +36,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1", jobs);
+app.use("/api/v1",auth);
 
 //Handle Unhandled Routes
 app.all("*", (req, res, next) => {

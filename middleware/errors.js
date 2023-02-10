@@ -21,19 +21,23 @@ module.exports = (err, req, res, next) => {
       error = new ErrorHandler(message, 404);
     }
 
-
     //Handling Mongoose Validation Error
-    if(err.name === 'ValidationError'){
-        const message = Object.values(err.errors).map(value==value.message);
-        error = new ErrorHandler(message,400)
+    if (err.name === "ValidationError") {
+      const message = Object.values(err.errors).map(value == value.message);
+      error = new ErrorHandler(message, 400);
     }
-
+    //Handle Mongoose Duplicate Key error
+    if (err.code === 11000) {
+      const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
+      error = new ErrorHandler(message, 400);
+    }
 
     res.status(error.statusCode).json({
       success: false,
       errMessage: error.message || "Internal Server Error",
     });
   }
+
   err.message = err.message || "Internal Server Error";
   res.status(err.statusCode).json({
     success: false,
