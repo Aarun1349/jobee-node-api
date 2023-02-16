@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { authenticateUser, authorizeRoles } = require("../middleware/auth");
 //Importing Jobs controller methods
 
 const {
@@ -20,7 +21,9 @@ const {
 router.route("/jobs").get(getJobs);
 
 // route to create new job
-router.route("/job/new").post(newJob);
+router
+  .route("/job/new")
+  .post(authenticateUser, authorizeRoles("employer", "admin"), newJob);
 
 // route to get jobs with the radius
 router.route("/jobs/:zipcode/:distance").get(getJobsInRadius);
@@ -29,13 +32,15 @@ router.route("/jobs/:zipcode/:distance").get(getJobsInRadius);
 router.route("/job/:id/:slug").get(getJobByIDandSlug);
 
 //route to update job
-router.route("/job/:id").put(updateJob).delete(deleteJobs);
+router
+  .route("/job/:id")
+  .put(authenticateUser,authorizeRoles("employer", "admin"), updateJob)
+  .delete(authenticateUser,authorizeRoles("employer", "admin"), deleteJobs);
 
 //route to delete job
 // router.route("/job/delete/:id").delete(deleteJobs);
 
 //route to get job stats  => /api/v1/stats/:topic
 router.route("/stats/:topic").get(jobStats);
-
 
 module.exports = router;
