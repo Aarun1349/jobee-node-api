@@ -152,7 +152,7 @@ async function deleteUserData(user, role) {
       appliedJobs[i].applicantsApplied.splice(
         appliedJobs[i].applicantsApplied.indexOf(obj.id)
       );
-      appliedJobs[i].save();
+      await appliedJobs[i].save();
     }
   }
 }

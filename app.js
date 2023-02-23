@@ -2,6 +2,12 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cokkieParser = require("cookie-parser");
 const fileUpload = require('express-fileupload')
+const rateLimitter = require('express-rate-limit')
+const Helmet = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize')
+const xssClean = require('xss-clean')
+const hpp = require('hpp')
+const cors = require('cors')
 const app = express();
 
 //Importing all routes
@@ -28,13 +34,42 @@ process.on("uncaughtException", (err) => {
 });
 connectToDatabase();
 
+//Securing HTTP Request
+app.use(Helmet());
+
+
 // Setup body parser
 app.use(express.json());
+
+//Setup Cookie Parser
 app.use(cokkieParser());
 
 
 //Handle File uploads
 app.use(fileUpload());
+
+
+// Sanitize
+app.use(mongoSanitize())
+
+//Prevent XSS script attack
+app.use(xssClean());
+
+//prevent parameter pollution
+app.use(hpp());
+
+// Apply CORS
+app.use(cors());
+
+
+
+// Limit API requests
+const limitter = rateLimitter({
+  windowMs:10*60*1000,
+  max:100
+})
+
+app.use(limitter);
 
 //routes
 app.get("/", (req, res) => {
