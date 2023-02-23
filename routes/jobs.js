@@ -11,6 +11,7 @@ const {
   deleteJobs,
   getJobByIDandSlug,
   jobStats,
+  applyJob,
 } = require("../controllers/jobsController");
 
 // router.get ('/jobs',(req,res)=>{
@@ -34,13 +35,15 @@ router.route("/job/:id/:slug").get(getJobByIDandSlug);
 //route to update job
 router
   .route("/job/:id")
-  .put(authenticateUser,authorizeRoles("employer", "admin"), updateJob)
-  .delete(authenticateUser,authorizeRoles("employer", "admin"), deleteJobs);
+  .put(authenticateUser, authorizeRoles("employer", "admin"), updateJob)
+  .delete(authenticateUser, authorizeRoles("employer", "admin"), deleteJobs);
 
 //route to delete job
 // router.route("/job/delete/:id").delete(deleteJobs);
 
 //route to get job stats  => /api/v1/stats/:topic
 router.route("/stats/:topic").get(jobStats);
+
+router.route("/job/:id/apply").put(authenticateUser, authorizeRoles( "user"),applyJob);
 
 module.exports = router;

@@ -3,38 +3,45 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Please enter your name"],
-  },
-  email: {
-    type: String,
-    required: [true, "Please enter your email address"],
-    unique: true,
-    validate: [validator.isEmail, "Please enter valid email address"],
-  },
-  role: {
-    type: String,
-    enum: {
-      values: ["user", "employer"],
-      message: "Please select correct role",
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please enter your name"],
     },
-    default: "user",
+    email: {
+      type: String,
+      required: [true, "Please enter your email address"],
+      unique: true,
+      validate: [validator.isEmail, "Please enter valid email address"],
+    },
+    role: {
+      type: String,
+      enum: {
+        values: ["user", "employer"],
+        message: "Please select correct role",
+      },
+      default: "user",
+    },
+    password: {
+      type: String,
+      required: [true, "Please provide password"],
+      minlength: [8, "Your password must be at least 8 characters length"],
+      select: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
   },
-  password: {
-    type: String,
-    required: [true, "Please provide password"],
-    minlength: [8, "Your password must be at least 8 characters length"],
-    select: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  resetPasswordToken: String,
-  resetPasswordExpire: Date,
-});
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
 // Encrpting password before saaving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) next();
@@ -69,4 +76,13 @@ userSchema.methods.generatePasswordToken = async function () {
   return resetToken;
 };
 
+// Virtual Methods
+
+// Show all jobs created by user
+userSchema.virtual("jobPublished", {
+  ref: "Jobs",
+  localField: "_id",
+  foreignField: "user",
+  justOne: false,
+});
 module.exports = mongoose.model("User", userSchema);

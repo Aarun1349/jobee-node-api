@@ -1,11 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cokkieParser = require('cookie-parser')
+const cokkieParser = require("cookie-parser");
+const fileUpload = require('express-fileupload')
 const app = express();
 
 //Importing all routes
 const jobs = require("./routes/jobs");
-const auth = require("./routes/auth")
+const auth = require("./routes/auth");
+const user = require("./routes/user");
 
 //setting up config.env valiable
 dotenv.config({ path: "./config/config.env" });
@@ -16,6 +18,7 @@ const connectToDatabase = require("./config/database");
 const errorMiddleware = require("./middleware/errors");
 const ErrorHandler = require("./utils/errorHandle");
 const cookieParser = require("cookie-parser");
+const users = require("./models/users");
 
 //handling uncaught exceptions
 process.on("uncaughtException", (err) => {
@@ -30,13 +33,17 @@ app.use(express.json());
 app.use(cokkieParser());
 
 
+//Handle File uploads
+app.use(fileUpload());
+
 //routes
 app.get("/", (req, res) => {
   res.sendStatus(200).json({ success: true });
 });
 
 app.use("/api/v1", jobs);
-app.use("/api/v1",auth);
+app.use("/api/v1", auth);
+app.use("/api/v1", user);
 
 //Handle Unhandled Routes
 app.all("*", (req, res, next) => {
