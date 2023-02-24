@@ -4,9 +4,9 @@
   "description": "Node API for jobs",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "SET NODE_ENV=production & node app.js",
     "dev": "nodemon app",
-    "prod": "SET NODE_ENV=production & nodemon app.js"
+    "prod": "SET NODE_ENV=production & node app.js"
   },
   "repository": {
     "type": "git",
