@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize')
 const xssClean = require('xss-clean')
 const hpp = require('hpp')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const app = express();
 
 //Importing all routes
@@ -39,7 +40,9 @@ app.use(Helmet());
 
 
 // Setup body parser
+app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json());
+app.use(express.static('public'))
 
 //Setup Cookie Parser
 app.use(cokkieParser());
