@@ -1,3 +1,4 @@
 /node_modules
 .dotenv
 /config/config.env
+/public/uploads/
